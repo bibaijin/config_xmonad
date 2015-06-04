@@ -43,8 +43,8 @@ myLayoutHook = avoidStruts $ smartBorders $ toggleLayouts full workspaceLayouts
 
 myManageHook :: ManageHook
 myManageHook = composeAll
-    [ className =? "TUNet64" --> doShift "5"
-    , className =? "Firefox" --> doShift "1:Web"
+    [ className =? "TUNet64" --> doShift "9:Daemon"
+    , className =? "Firefox" --> doShift "3:Web"
     , manageDocks
     ]
 
