@@ -28,6 +28,7 @@ main = do
             , layoutHook = myLayoutHook
             , manageHook = myManageHook <+> manageHook defaultConfig
             , logHook = myLogHook xmobarPipe
+            , modMask = mod4Mask
             }
             `additionalKeys` myKeys
 
@@ -59,7 +60,7 @@ myLogHook xmobarPipe = dynamicLogWithPP xmobarPrinter
 myKeys = [ ((mod4Mask .|. shiftMask, xK_z), spawn "xscreensaver-command -lock")
          , ((controlMask, xK_Print), spawn "sleep 0.2; scrot -s")
          , ((0, xK_Print), spawn "scrot")
-         , ((mod1Mask, xK_d), spawn "j4-dmenu-desktop")
-         , ((mod1Mask, xK_f), sendMessage ToggleLayout)
-         , ((mod1Mask, xK_g), spawn "gmrun")
+         , ((mod4Mask, xK_d), spawn "j4-dmenu-desktop")
+         , ((mod4Mask, xK_f), sendMessage ToggleLayout)
+         , ((mod4Mask, xK_g), spawn "gmrun")
          ]
