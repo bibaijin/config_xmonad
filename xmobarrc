@@ -1,0 +1,51 @@
+Config { 
+   -- appearance
+   font = "xft:WenQuanYi Micro Hei Mono:size=13"
+   -- font = "xft:WenQuanYi Micro Hei Mono:size=13, xft:DejaVu Sans Mono:size=13"
+   , bgColor =      "black"
+   , fgColor =      "#646464"
+   , position = TopW L 88
+   , border =       BottomB
+   , borderColor =  "#646464"
+
+   -- layout
+   , sepChar =  "%"   -- delineator between plugin names and straight text
+   , alignSep = "}{"  -- separator between left-right alignment
+   , template = "%StdinReader% }{ <fc=#ffff00>%LED%</fc>%battery% | %dynnetwork% | %cpu% | %date% "
+
+   -- general behavior
+   , lowerOnStart =     True    -- send to bottom of window stack on start
+   , hideOnStart =      False   -- start with window unmapped (hidden)
+   , allDesktops =      True    -- show on all desktops
+   , overrideRedirect = True    -- set the Override Redirect flag (Xlib)
+   , pickBroadest =     False   -- choose widest display (multi-monitor)
+   , persistent =       True    -- enable/disable hiding (True = disabled)
+
+   -- plugins
+   , commands = 
+        [
+        Run StdinReader
+        , Run CommandReader "/usr/bin/ledmon" "LED"
+        , Run BatteryP ["BAT0"]
+              ["-t", "<acstatus>"
+              , "-L", "10", "-H", "80"
+              , "-l", "red", "-h", "green"
+              , "--", "-O", "✔ <left>%", "-o", "✖ <left>%"
+              ] 10         
+        -- , Run DynNetwork [] 10
+
+        , Run DynNetwork     [ "--template" , "↑<tx>kB/s ↓<rx>kB/s"
+                             , "--Low"      , "50000"       -- units: kB/s
+                             , "--High"     , "100000"       -- units: kB/s
+                             -- , "--low"      , "darkred"
+                             , "--low"      , "red"
+                             , "--normal"   , "orange"
+                             , "--high"     , "green"
+                             ] 10
+        , Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
+
+        -- time and date indicator 
+        --   (%F = y-m-d date, %a = day of week, %T = h:m:s time)
+        , Run Date "<fc=#ABABAB>%F <fc=#ee9a00>%T</fc></fc>" "date" 10
+        ]
+   }
