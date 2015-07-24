@@ -12,10 +12,13 @@ import XMonad.Layout.ToggleLayouts
 import XMonad.Util.Run(spawnPipe)   -- spawnPipe and hPutStrLn
 import XMonad.Util.EZConfig(additionalKeys) -- append key/mouse bindings
 
+-- import XMonad.Actions.TopicSpace
+import XMonad.Actions.GroupNavigation
+
 import System.IO
-import XMonad.Actions.TopicSpace
 
 -- 主程序
+main :: IO ()
 main = do
     xmobarPipe <- spawnPipe "/usr/bin/xmobar /home/bibaijin/.xmonad/xmobarrc"
     xmonad $ withUrgencyHook dzenUrgencyHook { args = ["-bg", "darkgreen", "-xs", "1"] }
@@ -27,39 +30,46 @@ main = do
             , workspaces = myWorkspaces
             , layoutHook = myLayoutHook
             , manageHook = myManageHook <+> manageHook defaultConfig
-            , logHook = myLogHook xmobarPipe
+            , logHook = myLogHook xmobarPipe >> historyHook
+            , modMask = mod4Mask
             }
             `additionalKeys` myKeys
 
 -- 具体配置
-myWorkspaces = [ "1:Shell", "2:File", "3:Web", "4", "5", "6", "7", "8", "9:Daemon" ]
+myWorkspaces :: [[Char]]
+myWorkspaces = [ "1:Web", "2:File", "3", "4", "5:Daemon", "6", "7", "8", "9" ]
 
+-- myLayoutHook :: XMonad.Layout.LayoutModifier.ModifiedLayout
+-- myLayoutHook :: XMonad.Layout.LayoutModifier.ModifiedLayout
 myLayoutHook = avoidStruts $ smartBorders $ toggleLayouts full workspaceLayouts
     where
-        tiled = named "T" $ Tall 1 (5/100) (2/(1+(toRational(sqrt(5)::Double))))
+        tiled = named "T" $ Tall 1 (5/100) (2/(1+toRational(sqrt 5::Double)))
         mtiled = named "M" $ Mirror tiled
-        full = named "F" $ Full
+        full = named "F" Full
         workspaceLayouts = mtiled ||| tiled
 
 myManageHook :: ManageHook
 myManageHook = composeAll
-    [ className =? "TUNet64" --> doShift "9:Daemon"
-    , className =? "Firefox" --> doShift "3:Web"
+    [ className =? "TUNet64" --> doShift "5"
+    , className =? "Firefox" --> doShift "1:Web"
     , manageDocks
     ]
 
+myLogHook :: Handle -> X ()
 myLogHook xmobarPipe = dynamicLogWithPP xmobarPrinter
     where
         xmobarPrinter = defaultPP
             { ppOutput = hPutStrLn xmobarPipe
             , ppCurrent = xmobarColor "green" "" .wrap "[" "]"
-            , ppTitle = xmobarColor "green" "" . shorten 50
+            , ppTitle = xmobarColor "green" "" . shorten 40
             }
 
+myKeys :: [((KeyMask, KeySym), X ())]
 myKeys = [ ((mod4Mask .|. shiftMask, xK_z), spawn "xscreensaver-command -lock")
          , ((controlMask, xK_Print), spawn "sleep 0.2; scrot -s")
          , ((0, xK_Print), spawn "scrot")
-         , ((mod1Mask, xK_d), spawn "j4-dmenu-desktop")
-         , ((mod1Mask, xK_f), sendMessage ToggleLayout)
-         , ((mod1Mask, xK_g), spawn "gmrun")
+         , ((mod4Mask, xK_d), spawn "j4-dmenu-desktop")
+         , ((mod4Mask, xK_f), sendMessage ToggleLayout)
+         , ((mod4Mask, xK_g), spawn "gmrun")
+         , ((mod4Mask, xK_o), nextMatch History (return True))
          ]
