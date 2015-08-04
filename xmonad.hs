@@ -36,8 +36,8 @@ main = do
             `additionalKeys` myKeys
 
 -- 具体配置
-myWorkspaces :: [[Char]]
-myWorkspaces = [ "1:Web", "2:File", "3", "4", "5:Daemon", "6", "7", "8", "9" ]
+myWorkspaces :: [String]
+myWorkspaces = [ "1:Web", "2:File", "3", "4", "5", "6", "7", "8", "9:Daemon" ]
 
 -- myLayoutHook :: XMonad.Layout.LayoutModifier.ModifiedLayout
 -- myLayoutHook :: XMonad.Layout.LayoutModifier.ModifiedLayout
@@ -50,7 +50,7 @@ myLayoutHook = avoidStruts $ smartBorders $ toggleLayouts full workspaceLayouts
 
 myManageHook :: ManageHook
 myManageHook = composeAll
-    [ className =? "TUNet64" --> doShift "5"
+    [ className =? "TUNet64" --> doShift "9:Daemon"
     , className =? "Firefox" --> doShift "1:Web"
     , manageDocks
     ]
