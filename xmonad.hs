@@ -31,7 +31,7 @@ main = do
             , layoutHook = myLayoutHook
             , manageHook = myManageHook <+> manageHook defaultConfig
             , logHook = myLogHook xmobarPipe >> historyHook
-            , modMask = mod4Mask
+            , modMask = myModMask
             }
             `additionalKeys` myKeys
 
@@ -64,12 +64,14 @@ myLogHook xmobarPipe = dynamicLogWithPP xmobarPrinter
             , ppTitle = xmobarColor "green" "" . shorten 40
             }
 
+myModMask :: KeyMask
+myModMask = mod1Mask
 myKeys :: [((KeyMask, KeySym), X ())]
-myKeys = [ ((mod4Mask .|. shiftMask, xK_z), spawn "xscreensaver-command -lock")
+myKeys = [ ((myModMask .|. shiftMask, xK_z), spawn "xscreensaver-command -lock")
          , ((controlMask, xK_Print), spawn "sleep 0.2; scrot -s")
          , ((0, xK_Print), spawn "scrot")
-         , ((mod4Mask, xK_d), spawn "j4-dmenu-desktop")
-         , ((mod4Mask, xK_f), sendMessage ToggleLayout)
-         , ((mod4Mask, xK_g), spawn "gmrun")
-         , ((mod4Mask, xK_o), nextMatch History (return True))
+         , ((myModMask, xK_d), spawn "j4-dmenu-desktop")
+         , ((myModMask, xK_f), sendMessage ToggleLayout)
+         , ((myModMask, xK_g), spawn "gmrun")
+         , ((myModMask, xK_o), nextMatch History (return True))
          ]
